@@ -1,5 +1,5 @@
 {
-  "repo": "teddashh/multi-ai-terminal",
+  "repo": "TED-H-com/multi-ai-terminal",
   "slug": "multi-ai-terminal",
   "name": "Multi-AI Terminal",
   "mark": "MT",
@@ -44,7 +44,7 @@
       }
     },
     "secondary": {
-      "href": "https://github.com/teddashh/multi-ai-terminal",
+      "href": "https://github.com/TED-H-com/multi-ai-terminal",
       "label": {
         "en": "View source",
         "zh": "查看原始碼"
@@ -493,14 +493,14 @@
       "zh": "兩種方式都需要 Node.js 20 以上、Git（建議 2.32 以上），以及你要用的每家 provider 的登入或 API key。Claude 與 Codex 可以使用 MAT 代為下載的 runtime；Grok 需要 grok，Antigravity 需要 agy，OpenRouter 則需要 OPENROUTER_API_KEY。"
     },
     "primary": {
-      "href": "https://github.com/teddashh/multi-ai-terminal/releases/tag/v0.2.10",
+      "href": "https://github.com/TED-H-com/multi-ai-terminal/releases/tag/v0.2.10",
       "label": {
         "en": "Download v0.2.10",
         "zh": "下載 v0.2.10"
       }
     },
     "secondary": {
-      "href": "https://github.com/teddashh/multi-ai-terminal#readme",
+      "href": "https://github.com/TED-H-com/multi-ai-terminal#readme",
       "label": {
         "en": "Read the README",
         "zh": "閱讀 README"
@@ -658,28 +658,28 @@
   ],
   "links": [
     {
-      "href": "https://github.com/teddashh/multi-ai-terminal/releases",
+      "href": "https://github.com/TED-H-com/multi-ai-terminal/releases",
       "label": {
         "en": "Releases",
         "zh": "版本"
       }
     },
     {
-      "href": "https://github.com/teddashh/multi-ai-terminal/blob/main/SPEC.md",
+      "href": "https://github.com/TED-H-com/multi-ai-terminal/blob/main/SPEC.md",
       "label": {
         "en": "Engineering spec",
         "zh": "工程規格"
       }
     },
     {
-      "href": "https://github.com/teddashh/multi-ai-terminal/blob/main/README.zh-TW.md",
+      "href": "https://github.com/TED-H-com/multi-ai-terminal/blob/main/README.zh-TW.md",
       "label": {
         "en": "中文 README",
         "zh": "中文 README"
       }
     },
     {
-      "href": "https://teddashh.github.io/multi-ai-chat-desktop/",
+      "href": "https://ted-h-com.github.io/multi-ai-chat-desktop/",
       "label": {
         "en": "Predecessor: multi-ai-chat-desktop",
         "zh": "前一代：multi-ai-chat-desktop"

@@ -4,13 +4,13 @@
 
 A local workbench that runs staged multi-agent coding workflows across headless Claude Code, Codex, Grok, Antigravity, and OpenRouter runtimes, with an orchestrator agent gating each stage.
 
-**Project page:** https://teddashh.github.io/multi-ai-terminal/
+**Project page:** https://ted-h-com.github.io/multi-ai-terminal/
 
 Drag agents onto workflow stages, let a real LLM orchestrator gate each stage, and watch every agent's output stream into one categorized, replayable feed. OpenRouter models run with Codex as their runtime.
 
-Successor to [multi-ai-chat-desktop](https://teddashh.github.io/multi-ai-chat-desktop/): instead of scraping web chats, every agent is driven through a real headless CLI, app-server, or SDK runtime whose stream is normalized into one durable evidence schema.
+Successor to [multi-ai-chat-desktop](https://ted-h-com.github.io/multi-ai-chat-desktop/): instead of scraping web chats, every agent is driven through a real headless CLI, app-server, or SDK runtime whose stream is normalized into one durable evidence schema.
 
-The latest release is [**v0.2.10**](https://github.com/teddashh/multi-ai-terminal/releases/tag/v0.2.10) (July 23, 2026). It added OpenRouter through Codex as the runtime, a shared headless manager for Grok and Agy, and one provider-neutral event contract.
+The latest release is [**v0.2.10**](https://github.com/TED-H-com/multi-ai-terminal/releases/tag/v0.2.10) (July 23, 2026). It added OpenRouter through Codex as the runtime, a shared headless manager for Grok and Agy, and one provider-neutral event contract.
 
 ## How it works
 
@@ -56,7 +56,7 @@ Dev mode: `npm run dev` (Vite and the API with hot reload). Tests: `npm test`. T
 
 ## Desktop app
 
-Download a build from [GitHub Releases](https://github.com/teddashh/multi-ai-terminal/releases). The desktop app needs Node.js 20 or newer on `PATH`; set `MAT_NODE` to a specific compatible Node.js binary if needed. The installers are not code-signed or notarized.
+Download a build from [GitHub Releases](https://github.com/TED-H-com/multi-ai-terminal/releases). The desktop app needs Node.js 20 or newer on `PATH`; set `MAT_NODE` to a specific compatible Node.js binary if needed. The installers are not code-signed or notarized.
 
 - Windows: download `Multi-AI.Terminal_<version>_x64-setup.exe` (NSIS) or the `.msi` and run it. Because the installers are unsigned, SmartScreen may ask you to confirm first. The WebView2 runtime ships with Windows 10 and 11, and the installer bootstraps it if missing. Install Node.js 20 or newer with `winget install OpenJS.NodeJS.LTS`; Git for Windows is also required for worktree isolation. Set `MAT_NODE` to a specific `node.exe` if needed.
 - Debian and Ubuntu: download the `.deb`, then run `sudo apt install ./Multi-AI.Terminal_<version>_amd64.deb`.

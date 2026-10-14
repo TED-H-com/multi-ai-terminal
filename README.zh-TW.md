@@ -4,13 +4,13 @@
 
 在本機執行多階段、多 agent 的 coding 工作流程：Claude Code、Codex、Grok、Antigravity 與 OpenRouter 都以 headless runtime 執行，每個階段由協調者 agent 把關。
 
-**專案介紹頁：** https://teddashh.github.io/multi-ai-terminal/?lang=zh-TW
+**專案介紹頁：** https://ted-h-com.github.io/multi-ai-terminal/?lang=zh-TW
 
 把 agent 拖進工作流程的各個階段，讓真正的 LLM 協調者替每個階段把關，所有 agent 的輸出會匯成一條分類清楚、可以回放的訊息流。OpenRouter 的模型借用 Codex 當 runtime 執行。
 
-前一代是 [multi-ai-chat-desktop](https://teddashh.github.io/multi-ai-chat-desktop/?lang=zh-TW)：MAT 不再操作網頁聊天室，而是透過真正的 headless CLI、app-server 或 SDK runtime 驅動每個 agent，再把各家的串流整理成同一套可以長期保存的證據格式。
+前一代是 [multi-ai-chat-desktop](https://ted-h-com.github.io/multi-ai-chat-desktop/?lang=zh-TW)：MAT 不再操作網頁聊天室，而是透過真正的 headless CLI、app-server 或 SDK runtime 驅動每個 agent，再把各家的串流整理成同一套可以長期保存的證據格式。
 
-最新版本是 [**v0.2.10**](https://github.com/teddashh/multi-ai-terminal/releases/tag/v0.2.10)（2026 年 7 月 23 日），加入以 Codex 當 runtime 的 OpenRouter、Grok 與 Agy 共用的 headless manager，以及一套不分 provider 的事件契約。
+最新版本是 [**v0.2.10**](https://github.com/TED-H-com/multi-ai-terminal/releases/tag/v0.2.10)（2026 年 7 月 23 日），加入以 Codex 當 runtime 的 OpenRouter、Grok 與 Agy 共用的 headless manager，以及一套不分 provider 的事件契約。
 
 ## 運作方式
 
@@ -56,7 +56,7 @@ npm start                      # 網頁介面與 API 開在 http://127.0.0.1:778
 
 ## 桌面版
 
-從 [GitHub Releases](https://github.com/teddashh/multi-ai-terminal/releases) 下載安裝檔。桌面版需要 `PATH` 上有 Node.js 20 以上；必要時可以用 `MAT_NODE` 指定某個相容的 Node.js 執行檔。安裝檔沒有程式碼簽章，也沒有經過 Apple 公證。
+從 [GitHub Releases](https://github.com/TED-H-com/multi-ai-terminal/releases) 下載安裝檔。桌面版需要 `PATH` 上有 Node.js 20 以上；必要時可以用 `MAT_NODE` 指定某個相容的 Node.js 執行檔。安裝檔沒有程式碼簽章，也沒有經過 Apple 公證。
 
 - **Windows**：下載 `Multi-AI.Terminal_<版本>_x64-setup.exe`（NSIS）或 `.msi` 並執行。因為安裝檔沒有簽章，SmartScreen 可能會先要求你確認。Windows 10 與 11 已內建 WebView2 執行環境，缺少時安裝程式會自動補裝。用 `winget install OpenJS.NodeJS.LTS` 安裝 Node.js 20 以上；worktree 隔離功能還需要 Git for Windows。必要時用 `MAT_NODE` 指定特定的 `node.exe`。
 - **Debian 與 Ubuntu**：下載 `.deb`，執行 `sudo apt install ./Multi-AI.Terminal_<版本>_amd64.deb`。

@@ -6,7 +6,7 @@
   "product": {
     "name": "Multi-AI Terminal",
     "package": "multi-ai-terminal",
-    "repository": "https://github.com/teddashh/multi-ai-terminal",
+    "repository": "https://github.com/TED-H-com/multi-ai-terminal",
     "runtime": "Node.js Fastify server serving the built web UI at a local URL",
     "distributionLane": "source-web",
     "platforms": ["windows", "macos", "linux"],

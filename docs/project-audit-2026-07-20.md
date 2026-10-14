@@ -34,7 +34,7 @@ The v1.4 design review checked the latest heads available on 2026-07-20 for
 [TempoTerm](https://github.com/mukiwu/tempo-term) (`0bed0f9`),
 [Better Agent Terminal](https://github.com/tony1223/better-agent-terminal)
 (`b09639c`), and
-[multi-ai-chat-desktop](https://github.com/teddashh/multi-ai-chat-desktop)
+[multi-ai-chat-desktop](https://github.com/TED-H-com/multi-ai-chat-desktop)
 (`4e98c06`, the v1.7.0 merge) as hierarchy/status/focus interaction references:
 
 - TempoTerm demonstrates project-first navigation, glanceable activity and
