@@ -58,5 +58,8 @@
     "vite": "^6.3.5",
     "vitest": "^4.1.11",
     "zod": "^3.25.76"
+  },
+  "overrides": {
+    "postcss-selector-parser": "^7.1.6"
   }
 }
