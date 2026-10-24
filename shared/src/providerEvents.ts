@@ -58,7 +58,7 @@ export const ProviderToolUseSchema = z.object({
   sessionId: NonemptyStringSchema,
   toolName: NonemptyStringSchema,
   // Tool inputs are authored by the provider and vary by tool.
-  input: z.unknown(),
+  input: z.unknown().optional(),
   status: z.literal('running'),
   parentToolUseId: NonemptyStringSchema.nullable().optional(),
   timestamp: NonnegativeFiniteIntegerSchema.optional(),
@@ -131,8 +131,8 @@ export const ProviderPermissionRequestDataSchema = z.object({
   toolUseId: NonemptyStringSchema,
   toolName: NonemptyStringSchema,
   // Tool input and SDK permission suggestions vary by provider/tool.
-  input: z.unknown(),
-  suggestions: z.array(z.record(z.unknown())).optional(),
+  input: z.unknown().optional(),
+  suggestions: z.array(z.record(z.string(), z.unknown())).optional(),
   decisionReason: z.string().optional(),
 }).strict();
 export type ProviderPermissionRequestData = z.infer<typeof ProviderPermissionRequestDataSchema>;
@@ -140,7 +140,7 @@ export type ProviderPermissionRequestData = z.infer<typeof ProviderPermissionReq
 export const ProviderAskUserDataSchema = z.object({
   toolUseId: NonemptyStringSchema,
   // AskUserQuestion owns the question record shape, not the provider manager.
-  questions: z.array(z.record(z.unknown())),
+  questions: z.array(z.record(z.string(), z.unknown())),
 }).strict();
 export type ProviderAskUserData = z.infer<typeof ProviderAskUserDataSchema>;
 
@@ -149,7 +149,7 @@ export const ProviderHistoryToolSchema = z.object({
   id: NonemptyStringSchema,
   sessionId: NonemptyStringSchema,
   toolName: NonemptyStringSchema,
-  input: z.unknown(),
+  input: z.unknown().optional(),
   status: z.enum(['running', 'completed', 'error']),
   result: z.unknown().optional(),
   parentToolUseId: NonemptyStringSchema.nullable().optional(),
@@ -226,7 +226,7 @@ const ResultEventSchema = z.object({
   type: z.literal('claude:result'),
   sessionId: NonemptyStringSchema,
   // Result frames are the one intentionally raw provider payload.
-  result: z.record(z.unknown()),
+  result: z.record(z.string(), z.unknown()),
 }).strict();
 
 const TurnEndEventSchema = z.object({
