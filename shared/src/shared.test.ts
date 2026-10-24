@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { AgentEventSchema, ClaudeAccountIndexResponseSchema, CodexAccountIndexSchema, CodexApiKeySetRequestSchema, CodexApiKeyStatusResponseSchema, CodexAccountIdRequestSchema, NodeRunSchema, OpenRouterModelCatalogSchema, OpenRouterModelGroupSchema, OpenRouterModelVersionSchema, ProviderEventSchema, ProviderEventTypeSchema, ProviderIdSchema, ProviderInfoSchema, ProviderSessionMetaSchema, ProviderSignInCancelRequestSchema, ProviderSignInCodeRequestSchema, RunSnapshotSchema, StageSchema, SteerMessageSchema, SteerRequestSchema, WorkflowDefSchema, WorkspacePatchRequestSchema, WorkspaceSchema, applyWorkflowDefaults } from './index.js';
+import { AgentEventSchema, ClaudeAccountIndexResponseSchema, CodexAccountIndexSchema, CodexApiKeySetRequestSchema, CodexApiKeyStatusResponseSchema, CodexAccountIdRequestSchema, NodeRunSchema, OpenRouterModelCatalogSchema, OpenRouterModelGroupSchema, OpenRouterModelVersionSchema, ProviderEventSchema, ProviderEventTypeSchema, ProviderIdSchema, ProviderInfoSchema, ProviderSessionMetaSchema, ProviderSignInCancelRequestSchema, ProviderSignInCodeRequestSchema, RunSnapshotSchema, StageSchema, SteerMessageSchema, SteerRequestSchema, WorkflowDefSchema, WorkflowCreateRequestSchema, WorkflowPatchRequestSchema, WorkspacePatchRequestSchema, WorkspaceSchema, applyWorkflowDefaults } from './index.js';
 
 describe('shared schemas', () => {
   it('round-trips an event', () => {
@@ -38,6 +38,38 @@ describe('shared schemas', () => {
     delete value.maxParallel;
     delete value.maxRetriesPerStage;
     expect(applyWorkflowDefaults(value)).toMatchObject({ maxParallel: 4, maxRetriesPerStage: 2 });
+  });
+
+  it('keeps create defaults out of partial workflow updates', () => {
+    const value = preset('planning') as Record<string, unknown>;
+    delete value.builtin;
+    delete value.maxParallel;
+    delete value.maxRetriesPerStage;
+    expect(WorkflowCreateRequestSchema.parse(value)).toMatchObject({ maxParallel: 4, maxRetriesPerStage: 2 });
+    expect(WorkflowPatchRequestSchema.parse({ name: 'Renamed' })).toEqual({ name: 'Renamed' });
+    expect(WorkflowPatchRequestSchema.parse({})).toEqual({});
+    expect(WorkflowPatchRequestSchema.parse({ maxParallel: 7, maxRetriesPerStage: 5 }))
+      .toEqual({ maxParallel: 7, maxRetriesPerStage: 5 });
+  });
+
+  it('preserves omitted provider tool inputs and arbitrary record values', () => {
+    const events = [
+      { type: 'claude:tool-use', sessionId: 's', toolCall: { id: 't', sessionId: 's', toolName: 'Read', status: 'running' } },
+      { type: 'claude:permission-request', sessionId: 's', data: { toolUseId: 't', toolName: 'Read', suggestions: [{ allow: true, detail: { path: 'a.ts' } }] } },
+      { type: 'claude:history', sessionId: 's', items: [{ id: 't', sessionId: 's', toolName: 'Read', status: 'completed' }] },
+    ];
+    for (const event of events) expect(ProviderEventSchema.parse(event)).toEqual(event);
+  });
+
+  it('rejects oversized model lists before validating their members', () => {
+    let memberReads = 0;
+    const invalidVersion = { get id() { memberReads += 1; return null; } };
+    const result = OpenRouterModelGroupSchema.safeParse({
+      id: 'test', label: 'Test', defaultVersion: 'test', versions: Array(10_002).fill(invalidVersion),
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(result.error.issues).toMatchObject([{ code: 'too_big', path: ['versions'] }]);
+    expect(memberReads).toBe(0);
   });
 
   it('round-trips evidence-plane fields', () => {

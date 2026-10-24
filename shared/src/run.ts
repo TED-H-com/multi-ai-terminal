@@ -130,6 +130,6 @@ export const RunSnapshotSchema = z.object({
   task: z.string(), status: RunStatusSchema, currentStageId: z.string().optional(),
   nodes: z.array(NodeRunSchema), gateDecisions: z.array(GateDecisionSchema),
   steers: z.array(SteerMessageSchema).optional(),
-  providerVersions: z.record(z.string()).optional(),
+  providerVersions: z.record(z.string(), z.string()).optional(),
   createdAt: z.number().int().nonnegative(), endedAt: z.number().int().nonnegative().optional(),
 }).strict();

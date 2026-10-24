@@ -6,9 +6,9 @@ import { z } from 'zod';
 const integrity = z.string().min(1);
 const runtimeRelativePath = z.string().regex(/^(?!.*(?:^|\/)\.{1,2}(?:\/|$))(?!.*\\)(?!.*\/\/)[^/]+(?:\/[^/]+)*$/);
 const catalogSchema = z.object({
-  claude: z.object({ version: z.string().min(1), platforms: z.record(z.object({ packageName: z.string().min(1), integrity })) }),
-  codex: z.object({ version: z.string().min(1), platforms: z.record(z.object({ npmVersion: z.string().min(1), integrity })) }),
-  node: z.object({ version: z.string().min(1), platforms: z.record(z.object({
+  claude: z.object({ version: z.string().min(1), platforms: z.record(z.string(), z.object({ packageName: z.string().min(1), integrity })) }),
+  codex: z.object({ version: z.string().min(1), platforms: z.record(z.string(), z.object({ npmVersion: z.string().min(1), integrity })) }),
+  node: z.object({ version: z.string().min(1), platforms: z.record(z.string(), z.object({
     nodePlatform: z.string().min(1), nodeArch: z.string().min(1), archiveExt: z.string().min(1),
     exePath: runtimeRelativePath, sha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
   })) }),

@@ -90,4 +90,8 @@ export const WorkspacePatchRequestSchema = z.object({
   verifyCommand: z.string().nullable().optional(), verifyTimeoutSec: z.number().int().positive().nullable().optional(),
 }).strict();
 export const WorkflowCreateRequestSchema = WorkflowDefSchema.omit({ builtin: true });
-export const WorkflowPatchRequestSchema = WorkflowCreateRequestSchema.partial();
+// A partial update must not materialize create-time defaults for omitted fields.
+export const WorkflowPatchRequestSchema = WorkflowCreateRequestSchema.partial().extend({
+  maxParallel: WorkflowCreateRequestSchema.shape.maxParallel.removeDefault().optional(),
+  maxRetriesPerStage: WorkflowCreateRequestSchema.shape.maxRetriesPerStage.removeDefault().optional(),
+});

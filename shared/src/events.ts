@@ -44,7 +44,7 @@ export const AdapterContentEventSchema = z.object({
   kind: z.enum(['message', 'thinking', 'tool_use', 'tool_result']),
   text: z.string(),
   tool: EventToolSchema.optional(),
-  data: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
 }).strict();
 export type AdapterContentEvent = z.infer<typeof AdapterContentEventSchema>;
 export const AgentEventSchema = z.object({
@@ -58,6 +58,6 @@ export const AgentEventSchema = z.object({
   kind: EventKindSchema,
   text: z.string(),
   tool: EventToolSchema.optional(),
-  data: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
   ts: z.number().int().nonnegative(),
 }).strict();

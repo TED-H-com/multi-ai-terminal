@@ -26,6 +26,7 @@ import {
   listRuns,
   saveRun,
 } from '../../src/store/runs.js';
+import { WorkflowPatchRequestSchema } from '@mat/shared';
 import { runSnapshot, workflow } from './helpers.js';
 
 const dirs: string[] = [];
@@ -81,6 +82,14 @@ describe.sequential('workflow store', () => {
     expect(duplicate.builtin).toBeUndefined();
     await deleteWorkflow(created.id);
     expect((await listWorkflows()).some((item) => item.id === created.id)).toBe(false);
+  });
+
+  it('preserves custom execution settings when a parsed PATCH only renames a workflow', async () => {
+    configureWorkflowStore(temporaryDir('mat-workflows-patch-'));
+    const created = await createWorkflow({ ...workflow(), maxParallel: 7, maxRetriesPerStage: 5 });
+    const updated = await updateWorkflow(created.id, WorkflowPatchRequestSchema.parse({ name: 'Renamed' }));
+    expect(updated).toMatchObject({ name: 'Renamed', maxParallel: 7, maxRetriesPerStage: 5 });
+    expect((await listWorkflows()).find((item) => item.id === created.id)).toEqual(updated);
   });
 
   it('zod-validates custom workflow files on every read', async () => {
