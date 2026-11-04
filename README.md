@@ -16,7 +16,7 @@ The latest release is [**v0.2.10**](https://github.com/TED-H-com/multi-ai-termin
 
 - **Projects and Launch**: each workspace points at a directory (git-aware). The icon-and-text rail switches between project selection and the launch composer without losing drafts. Common mode, readiness, and task settings stay visible; advanced stage editing lives under **Customize**.
 - **Workflows**: ordered stages, each holding agent slots. Drag agents from the advanced palette; several instances of the same provider are allowed, up to 12 agents per stage. Per slot: model, reasoning effort, permission tier, prompt template, and count.
-- **Orchestrator**: a real CLI agent (any provider) that receives a digest of each gated stage's candidates and answers with a strict-JSON gate decision: advance, retry (targeting specific nodes, with a prompt addendum), or abort. Budget caps are deterministic. If the answer cannot be parsed, the stage advances and is marked degraded.
+- **Orchestrator**: a real CLI agent (any provider: claude, codex, grok, agy, openrouter) that receives a digest of each gated stage's candidates and answers with a strict-JSON gate decision: advance, retry (targeting specific nodes, with a prompt addendum), or abort. Budget caps are deterministic. If the answer cannot be parsed, the stage advances and is marked degraded.
 - **Stage isolation**: optional git-worktree isolation per node. Each attempt's work is captured as a binary patch you can inspect and apply from the UI.
 - **Run workspace**: **Conversation** comes first and makes every node's answer, decision, verification, and failure easy to scan. **Timeline** keeps the raw event categories, virtualized scrolling, node, role, and search filters, and full replay from the durable event log.
 - **Health and diagnostics**: server, provider, workspace, run, verification, and evidence-continuity findings, with safe Setup, provider recheck, inspect, redacted-log, and debug-bundle actions. Detecting a CLI is never presented as proof of sign-in.
@@ -38,7 +38,7 @@ Choose **Debug** beside **Report**, or use the read-only **Health** drawer, to d
 
 ## Quickstart
 
-Requirements: Node.js 20 or newer, and Git 2.32 or newer recommended (older Git falls back to a plain `git apply --check`). You also need the runtimes for the providers you use: Claude and Codex can use MAT-managed, pinned runtimes; Grok uses `grok`; Antigravity uses `agy`. OpenRouter has no CLI of its own: it needs the Codex runtime and `OPENROUTER_API_KEY` in MAT's environment. In the editor, choose an OpenRouter model first and then a version; MAT saves and sends that version's exact OpenRouter request slug.
+Requirements: Node.js 20 or newer, and Git 2.32 or newer recommended (older Git falls back to a plain `git apply --check`). You also need the runtimes for the providers you use: Claude and Codex can use MAT-managed, pinned runtimes; Grok uses `grok`; Antigravity uses `agy`. OpenRouter has no CLI of its own (it is provider #5): it needs the Codex runtime and `OPENROUTER_API_KEY` in MAT's environment. In the editor, choose an OpenRouter model first and then a version; MAT saves and sends that version's exact OpenRouter request slug.
 
 ```sh
 npm install
@@ -61,7 +61,7 @@ Download a build from [GitHub Releases](https://github.com/TED-H-com/multi-ai-te
 - Windows: download `Multi-AI.Terminal_<version>_x64-setup.exe` (NSIS) or the `.msi` and run it. Because the installers are unsigned, SmartScreen may ask you to confirm first. The WebView2 runtime ships with Windows 10 and 11, and the installer bootstraps it if missing. Install Node.js 20 or newer with `winget install OpenJS.NodeJS.LTS`; Git for Windows is also required for worktree isolation. Set `MAT_NODE` to a specific `node.exe` if needed.
 - Debian and Ubuntu: download the `.deb`, then run `sudo apt install ./Multi-AI.Terminal_<version>_amd64.deb`.
 - Other Linux distributions: download the `.AppImage`, run `chmod +x ./Multi-AI.Terminal_*_amd64.AppImage`, then launch it. An `.rpm` package is also provided.
-- macOS: download the `.dmg` for your Mac (`aarch64` for Apple silicon, `x64` for Intel), open it, and copy the app to Applications. On first launch, right-click Multi-AI Terminal and choose **Open**. On macOS 15 or later, try to open it once, then choose **Open Anyway** under **System Settings > Privacy & Security**.
+- macOS: download the `.dmg` for your Mac (`aarch64` for Apple silicon, `x64` for Intel), open it, and copy the app to Applications. On first launch, right-click Multi-AI Terminal and choose **Open**. On macOS 15 or later, try to open it once, then choose **Open Anyway** under **System Settings > Privacy & Security** (Gatekeeper bypass).
 
 The desktop shell runs the same bundled server on a random `127.0.0.1` port and keeps data in `~/.multi-ai-terminal/`, just like the web-served build. To build the desktop resources locally, run `npm run build` followed by `npm run desktop:bundle`; `npm run desktop:build` also needs Rust and the native Tauri build prerequisites.
 
