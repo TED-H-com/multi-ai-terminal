@@ -445,8 +445,25 @@ REST (zod-validated; errors `{error:{code,message}}`; bearer token if configured
 GET  /api/health                              → {ok, version}
 GET  /api/providers                           → [{id, tier, ok, version?, detail?, models, defaultModel,
                                                 installable, manualCommand?, authAlert?, signInCommand?}]
+GET  /api/providers/openrouter/models         → [{id, name, group, context_length, pricing}]
+GET  /api/providers/claude/accounts           → {activeAccountId?, accounts: []}
+GET  /api/providers/codex/accounts            → {activeAccountId?, accounts: []}
+POST /api/providers/codex/accounts/capture    # no body; captures current auth.json back to store
+POST /api/providers/codex/accounts/switch     # body: { accountId }; copies store auth.json to shared CODEX_HOME
+POST /api/providers/codex/accounts/remove     # body: { accountId }
+GET  /api/providers/codex/api-key             → { configured: boolean }
+POST /api/providers/codex/api-key             # body: { key: string }
+DELETE /api/providers/codex/api-key           # deletes local api key
+GET  /api/runtimes                            → Record<RuntimeFamily, RuntimeStatus>
+POST /api/runtimes/:family/install            # no body; installs pinned artifact
+POST /api/runtimes/:family/clear              # no body; deletes managed artifact
 POST /api/providers/refresh                   # no body; clears local PATH/version caches and reruns discovery
 POST /api/providers/:id/install               # explicit click only; fixed server-side recipe or manual command
+POST /api/providers/:id/update                # explicit click only; update provider
+POST /api/providers/:id/signin/start          # no body; spawn sign-in child
+GET  /api/providers/:id/signin/status         → SignInStatus
+POST /api/providers/:id/signin/code           # body: { code: string }
+POST /api/providers/:id/signin/cancel         # no body; cancel sign in
 POST /api/client-log                          # bounded best-effort browser diagnostic intake
 GET  /api/debug/server-log                    # bounded server diagnostic tail
 GET|POST|PATCH|DELETE /api/workspaces(:id)    # POST validates path exists; returns isGit
