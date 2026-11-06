@@ -1,8 +1,11 @@
 import type { AgentEvent, RunSnapshot, WorkflowDef } from '@mat/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { createMatStore, EVENT_RING_LIMIT } from './store.js';
+import { apiClient } from '../api/client.js';
 
 const event = (seq: number): AgentEvent => ({ id: `e${seq}`, seq, runId: 'r1', stageId: 's1', nodeRunId: 's1.a.0', attempt: 1, role: 'agent', kind: 'message', text: String(seq), ts: seq });
+
+vi.mock('../api/client.js', () => ({ apiClient: { getEvents: vi.fn(), getProviders: vi.fn(), getRuntimes: vi.fn(), getWorkspaces: vi.fn() } }));
 
 describe('MAT store', () => {
   it('applies websocket run and event messages without duplicates', () => {
@@ -285,4 +288,30 @@ describe('MAT store', () => {
     expect(store.getState().events.r1?.[0]?.seq).toBe(2);
     expect(store.getState().events.r1?.at(-1)?.seq).toBe(EVENT_RING_LIMIT + 1);
   });
+
+  it('refreshes runtimes and providers on runtime:changed global message', async () => {
+    const getRuntimes = vi.fn().mockResolvedValue([]);
+    const getProviders = vi.fn().mockResolvedValue([]);
+    const client = await import('../api/client.js');
+    client.apiClient.getRuntimes = getRuntimes;
+    client.apiClient.getProviders = getProviders;
+
+    // Create an isolated store instance just for this test
+    const store = createMatStore();
+    store.getState().applyWsMsg({ type: 'runtime:changed' } as any);
+    expect(getRuntimes).toHaveBeenCalled();
+    expect(getProviders).toHaveBeenCalled();
+  });
+
+  it('refreshes workspaces on workspace:sync global message', async () => {
+    const getWorkspaces = vi.fn().mockResolvedValue([]);
+    const client = await import('../api/client.js');
+    client.apiClient.getWorkspaces = getWorkspaces;
+
+    // Create an isolated store instance just for this test
+    const store = createMatStore();
+    store.getState().applyWsMsg({ type: 'workspace:sync' } as any);
+    expect(getWorkspaces).toHaveBeenCalled();
+  });
+
 });
