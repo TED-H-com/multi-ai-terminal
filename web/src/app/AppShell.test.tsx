@@ -89,17 +89,17 @@ describe('AppShell', () => {
 
     // Toggle launchpad
     const settingsBtn = getAllByLabelText('shell.hideSettings')[0];
-    fireEvent.click(settingsBtn);
+    if (settingsBtn) fireEvent.click(settingsBtn);
 
     // Toggle inspector
     const inspectorBtn = getAllByLabelText('shell.hideActivity')[0];
-    fireEvent.click(inspectorBtn);
+    if (inspectorBtn) fireEvent.click(inspectorBtn);
 
     // Switch views
     const launchBtn = getAllByLabelText('shell.launch')[0];
-    fireEvent.click(launchBtn);
+    if (launchBtn) fireEvent.click(launchBtn);
     const projectsBtn = getAllByLabelText('shell.projects')[0];
-    fireEvent.click(projectsBtn);
+    if (projectsBtn) fireEvent.click(projectsBtn);
 
     // Test resize behavior via keyboard
     const dividers = getAllByRole('separator');
