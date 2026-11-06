@@ -78,7 +78,7 @@ describe('AppShell', () => {
 
   it('renders AppShell without crashing and allows interactions', () => {
     vi.spyOn(UiPreferences, 'useUiPreferences').mockReturnValue({ locale: 'en-US', t: (k: string) => k } as any);
-    const { container, getByLabelText, getAllByRole } = render(
+    const { container, getAllByLabelText, getAllByRole } = render(
         <AppShell />
     );
     expect(container.firstChild).not.toBeNull();
@@ -88,17 +88,17 @@ describe('AppShell', () => {
     });
 
     // Toggle launchpad
-    const settingsBtn = getByLabelText('shell.hideSettings');
+    const settingsBtn = getAllByLabelText('shell.hideSettings')[0];
     fireEvent.click(settingsBtn);
 
     // Toggle inspector
-    const inspectorBtn = getByLabelText('shell.hideActivity');
+    const inspectorBtn = getAllByLabelText('shell.hideActivity')[0];
     fireEvent.click(inspectorBtn);
 
     // Switch views
-    const launchBtn = getByLabelText('shell.launch');
+    const launchBtn = getAllByLabelText('shell.launch')[0];
     fireEvent.click(launchBtn);
-    const projectsBtn = getByLabelText('shell.projects');
+    const projectsBtn = getAllByLabelText('shell.projects')[0];
     fireEvent.click(projectsBtn);
 
     // Test resize behavior via keyboard
@@ -140,4 +140,32 @@ describe('AppShell', () => {
           vi.runAllTimers();
       });
   });
+
+  it('toggles launchpad and inspector panels via NavigationRail', () => {
+    vi.spyOn(UiPreferences, 'useUiPreferences').mockReturnValue({ locale: 'en-US', t: (k: string) => k } as any);
+    const { container, getAllByLabelText } = render(<AppShell />);
+
+    const settingsBtn = getAllByLabelText('shell.hideSettings')[0];
+    const inspectorBtn = getAllByLabelText('shell.hideActivity')[0];
+
+    expect(settingsBtn).toBeTruthy();
+    expect(inspectorBtn).toBeTruthy();
+
+    act(() => {
+        if (settingsBtn) fireEvent.click(settingsBtn);
+        if (inspectorBtn) fireEvent.click(inspectorBtn);
+    });
+
+    expect(getAllByLabelText('shell.showSettings')[0]).toBeTruthy();
+    expect(getAllByLabelText('shell.showActivity')[0]).toBeTruthy();
+
+    act(() => {
+        fireEvent.click(getAllByLabelText('shell.showSettings')[0] as HTMLElement);
+        fireEvent.click(getAllByLabelText('shell.showActivity')[0] as HTMLElement);
+    });
+
+    expect(getAllByLabelText('shell.hideSettings')[0]).toBeTruthy();
+    expect(getAllByLabelText('shell.hideActivity')[0]).toBeTruthy();
+  });
+
 });

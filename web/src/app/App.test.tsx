@@ -26,6 +26,16 @@ vi.mock('../api/client.js', () => ({
     abortRun: vi.fn(), installRuntime: vi.fn(),
   },
 }));
+vi.mock('../i18n/UiPreferences.js', () => ({
+  useUiPreferences: () => ({ locale: 'en-US', t: (key: string) => key }),
+  InterfacePreferences: () => <div data-testid="interface-prefs">prefs</div>,
+  UiPreferencesProvider: ({ children }: any) => <>{children}</>
+}));
+vi.mock('../panels/health/index.js', () => ({
+  HealthDrawer: () => <div data-testid="health-drawer">HealthDrawer</div>,
+  healthIssueCount: (props: any) => props.wsConnection === 'connecting' ? 1 : 0
+}));
+
 vi.mock('../api/ws.js', () => ({
   ReconnectingWsClient: class {
     constructor(options: { onCatchUpState?: typeof mocks.catchUpState }) { mocks.catchUpState = options.onCatchUpState; }
@@ -122,4 +132,50 @@ describe('App boot run discovery', () => {
     expect(apiClient.installRuntime).not.toHaveBeenCalled();
     act(() => root.unmount());
   });
+
+  it('aborts an active run and surfaces API rejection as a boot error', async () => {
+    vi.mocked(apiClient.getWorkspaces).mockResolvedValue([workspace]);
+    vi.mocked(apiClient.getWorkflows).mockResolvedValue([]);
+    vi.mocked(apiClient.getProviders).mockResolvedValue([]);
+    mocks.getRuns.mockResolvedValue([activeRun]);
+    matStore.setState({ workspaces: [workspace], workflows: [], providers: [], selectedWorkspaceId: 'w1', activeRunId: 'active-run', viewedRunId: 'active-run', runsLoading: false, runs: { 'active-run': activeRun }, events: {} });
+    vi.mocked(apiClient.abortRun).mockRejectedValue(new Error('Network error'));
+
+    const container = document.createElement('div');
+    document.body.append(container);
+    const root = createRoot(container);
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    act(() => root.render(<App />));
+
+    const { fireEvent, screen } = await import('@testing-library/react');
+    const abortButton = await screen.findByRole('button', { name: 'app.abort' });
+    await act(async () => {
+      fireEvent.click(abortButton);
+    });
+
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toContain('Network error'));
+    act(() => root.unmount());
+  });
+
+  it('shows a health indicator when there are workspace or connection issues', async () => {
+    vi.mocked(apiClient.getWorkspaces).mockResolvedValue([workspace]);
+    vi.mocked(apiClient.getWorkflows).mockResolvedValue([]);
+    vi.mocked(apiClient.getProviders).mockResolvedValue([]);
+    mocks.getRuns.mockResolvedValue([]);
+    matStore.setState({ workspaces: [workspace], workflows: [], providers: [], selectedWorkspaceId: 'w1' });
+    matStore.getState().setWsConnection('connecting');
+
+    const container = document.createElement('div');
+    document.body.append(container);
+    const root = createRoot(container);
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    act(() => root.render(<App />));
+
+    const { screen } = await import('@testing-library/react');
+    const healthButton = await screen.findByRole('button', { name: 'app.health' });
+    expect(screen.getByRole('button', { name: 'app.health' }).className).toContain('text-amber-200');
+    expect(screen.getByTitle('app.healthIssues')).toBeTruthy();
+    act(() => root.unmount());
+  });
+
 });

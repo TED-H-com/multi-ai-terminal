@@ -80,4 +80,24 @@ describe('NarrativePanel', () => {
     await waitFor(() => expect(apiMocks.getEvents).toHaveBeenCalledWith('r1', 1, 1000));
     await waitFor(() => expect(screen.queryByText(/Live evidence is incomplete/)).toBeNull());
   });
+
+  it('renders error, decision, and verification kinds', () => {
+    const mixedEvents: AgentEvent[] = [
+      { ...base, id: 'e6', seq: 6, ts: 6, role: 'agent', kind: 'error', text: 'Boom' },
+      { ...base, id: 'e7', seq: 7, ts: 7, role: 'decision', kind: 'decision', text: 'Advance' },
+      { ...base, id: 'e8', seq: 8, ts: 8, role: 'agent', kind: 'message', data: { detail: 'verify-result' }, text: '1 checks passed' },
+    ];
+    matStore.setState({ events: { r1: mixedEvents } });
+    renderPanel(<NarrativePanel />);
+
+    const errorEl = screen.getByText('Boom');
+    expect(errorEl.className).toContain('text-red-100');
+
+    const decisionEl = screen.getByText('Advance');
+    expect(decisionEl.className).toContain('text-emerald-100');
+
+    const verifyEl = screen.getByText('1 checks passed');
+    expect(verifyEl).toBeTruthy();
+  });
+
 });

@@ -169,4 +169,14 @@ describe('RunPanel smoke', () => {
     delete (URL as unknown as { revokeObjectURL?: unknown }).revokeObjectURL;
     click.mockRestore();
   });
+
+  it('handles skipped verification with no-verify-command correctly', () => {
+    const skippedNode = { ...run.nodes[0]!, nodeRunId: 'skipped-1', status: 'done' as const, verification: { status: 'skipped' as const, reason: 'no-verify-command' } };
+    const historical = { ...run, nodes: [skippedNode] };
+    matStore.setState({ runs: { r1: historical } });
+    renderWithWorkspaceReact(<RunPanel />);
+    expect(screen.queryByText('0 passed / 0 failed / 0 skipped')).toBeNull(); // it shouldn't count no-verify-command in the summary if they are all no-verify-command
+    expect(screen.queryByText('unverified')).toBeNull();
+  });
+
 });
