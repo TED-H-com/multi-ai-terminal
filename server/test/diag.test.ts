@@ -2,12 +2,15 @@ import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
-import { diag } from '../src/diag.js';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { diag, serverDiagPath } from '../src/diag.js';
 import { configureDataDir } from '../src/store/dataDir.js';
 
 const dirs: string[] = [];
-afterEach(async () => Promise.all(dirs.splice(0).map((dir) => rm(dir, { recursive: true, force: true }))));
+afterEach(async () => {
+    vi.restoreAllMocks();
+    return Promise.all(dirs.splice(0).map((dir) => rm(dir, { recursive: true, force: true })));
+});
 
 describe('diagnostic journal', () => {
   it('writes valid run JSONL and rotates the server journal at five megabytes', () => {
@@ -54,5 +57,12 @@ describe('diagnostic journal', () => {
       message: 'Bearer [REDACTED_ENV]',
       nested: { values: ['[REDACTED_ENV]'] },
     });
+  });
+
+  it('serverDiagPath returns the correct path', () => {
+      const root = mkdtempSync(join(tmpdir(), 'mat-diag-path-'));
+      dirs.push(root);
+      configureDataDir(root);
+      expect(serverDiagPath()).toBe(join(root, 'logs', 'server-diag.jsonl'));
   });
 });
