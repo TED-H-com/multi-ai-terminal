@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { NodeRun } from '@mat/shared';
-import { assembleArtifacts, buildDigest, digestResultBudget, recordToolUse, resetToolCount } from '../../src/engine/digest.js';
+import { assembleArtifacts, buildDigest, digestResultBudget, recordToolUse, resetToolCount, patchStat } from '../../src/engine/digest.js';
 
 const dirs: string[] = [];
 const node = (id: string, resultText = 'answer', provider: NodeRun['agent']['provider'] = 'mock'): NodeRun => ({
@@ -16,6 +16,8 @@ afterEach(async () => Promise.all(dirs.splice(0).map((dir) => rm(dir, { recursiv
 
 describe('fan-in digest', () => {
   it('clamps deterministic per-candidate budgets at every edge', () => {
+    expect(digestResultBudget(0)).toBe(6000);
+    expect(digestResultBudget(-1)).toBe(6000);
     expect(digestResultBudget(1)).toBe(6000);
     expect(digestResultBudget(4)).toBe(6000);
     expect(digestResultBudget(5)).toBe(4800);
@@ -65,5 +67,54 @@ describe('fan-in digest', () => {
     expect(artifacts.patches).toContain('…[patches truncated]');
     expect(artifacts.patches.length).toBeLessThanOrEqual(30_000);
     expect(artifacts.artifactPaths).toBe(`${first}\n${second}`);
+  });
+
+  it('formats usage correctly', () => {
+      const nodeUsage = { ...node('usage-node') };
+      nodeUsage.usage = { inputTokens: 10, outputTokens: 20, costUsd: 0.001 };
+      const digest = buildDigest([nodeUsage]);
+      expect(digest).toContain('usage: in=10 out=20 cost=$0.0010');
+
+      const emptyUsage = { ...node('empty-usage') };
+      expect(buildDigest([emptyUsage])).toContain('usage: n/a');
+  });
+
+  it('patchStat handles undefined/missing path and correctly parses a patch', () => {
+      expect(patchStat(undefined)).toBe('n/a');
+      expect(patchStat('nonexistent-path')).toBe('n/a');
+
+      const dir = mkdtempSync(join(tmpdir(), 'mat-patch-stat-')); dirs.push(dir);
+      const patchPath = join(dir, 'test.patch');
+      writeFileSync(patchPath, 'diff --git a/file1 b/file1\n--- a/file1\n+++ b/file1\n+added line\n-deleted line\n+another added line\ndiff --git a/file2 b/file2\n--- a/file2\n+++ b/file2\n-deleted from file2');
+
+      expect(patchStat(patchPath)).toBe('2 files, +2/-2');
+  });
+
+  it('lastError handles different node statuses correctly', () => {
+      const failedWithResult = { ...node('failed-result') };
+      failedWithResult.status = 'failed';
+      failedWithResult.resultText = 'specific error message';
+      expect(buildDigest([failedWithResult])).toContain('last-error: specific error message');
+
+      const failedWithExitCode = { ...node('failed-exitcode') };
+      failedWithExitCode.status = 'failed';
+      failedWithExitCode.resultText = undefined;
+      failedWithExitCode.exitCode = 127;
+      expect(buildDigest([failedWithExitCode])).toContain('last-error: exit 127');
+
+      const failedNoDetails = { ...node('failed-nodetails') };
+      failedNoDetails.status = 'failed';
+      failedNoDetails.resultText = undefined;
+      expect(buildDigest([failedNoDetails])).toContain('last-error: failed');
+
+      const killedNode = { ...node('killed-node') };
+      killedNode.status = 'killed';
+      expect(buildDigest([killedNode])).toContain('last-error: killed');
+  });
+
+  it('buildDigest handles interruptedPartial option correctly', () => {
+      const killedNode = { ...node('killed-partial') };
+      killedNode.status = 'killed';
+      expect(buildDigest([killedNode], { interruptedPartial: true })).toContain('[interrupted partial]');
   });
 });
