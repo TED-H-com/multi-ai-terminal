@@ -1,4 +1,5 @@
 import type { AgentEvent } from '@mat/shared';
+import { memo } from 'react';
 import { Collapsible } from './Collapsible.js';
 import { displayEventKind } from '../i18n/displayText.js';
 import { useUiPreferences } from '../i18n/UiPreferences.js';
@@ -33,7 +34,7 @@ const roleStyle: Record<AgentEvent['role'], string> = {
   tool: 'border-amber-500 bg-amber-950/20 font-mono text-amber-100', system: 'border-border text-muted', decision: 'border-emerald-500 bg-emerald-950/20 text-emerald-100',
 };
 
-export function EventRow({ event, duplicateCount }: { event: AgentEvent; duplicateCount?: number }) {
+export const EventRow = memo(function EventRow({ event, duplicateCount }: { event: AgentEvent; duplicateCount?: number }) {
   const { locale } = useUiPreferences();
   const style = event.kind === 'error' ? 'border-red-500 bg-red-950/30 text-red-200' : roleStyle[event.role];
   const heading = event.nodeRunId ?? (locale === 'zh-TW' ? '執行' : 'run');
@@ -44,4 +45,4 @@ export function EventRow({ event, duplicateCount }: { event: AgentEvent; duplica
       : event.role === 'tool' ? <Collapsible summary={<span>{event.tool?.name ?? displayEventKind(event.kind, locale)}{event.tool?.toolCallId ? ` · ${event.tool.toolCallId}` : ''}</span>}><pre className="overflow-auto whitespace-pre-wrap text-xs">{event.tool?.input ?? event.tool?.output ?? event.text}</pre></Collapsible>
       : <p className="whitespace-pre-wrap break-words">{event.text}</p>}
   </article>;
-}
+});

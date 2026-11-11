@@ -1,6 +1,6 @@
 import type { AgentEvent, EventRole, RunSnapshot } from '@mat/shared';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { apiClient } from '../../api/client.js';
 import { ACTIVE_RUN_STATUSES, matStore, useMatStore } from '../../app/store.js';
 import { EventRow } from '../../components/EventRow.js';
@@ -324,13 +324,13 @@ export function findEventGaps(events: readonly AgentEvent[]): Array<{ fromSeq: n
   return gaps;
 }
 
-function FeedItemRow({ item }: { item: FeedItem }) {
+const FeedItemRow = memo(function FeedItemRow({ item }: { item: FeedItem }) {
   const { locale } = useUiPreferences();
   if (item.events.length === 1) return <EventRow event={item.events[0]!} {...(item.duplicateCount ? { duplicateCount: item.duplicateCount } : {})} />;
   return <div className="my-1 overflow-hidden rounded border border-amber-700/60 bg-amber-950/10" data-tool-call-id={item.toolCallId} aria-label={`${locale === 'zh-TW' ? '工具呼叫' : 'Tool call'} ${item.toolCallId ?? ''}`}>
     {item.events.map((event) => <EventRow key={event.id} event={event} />)}
   </div>;
-}
+});
 
 export async function loadReplayPages(
   runId: string,
