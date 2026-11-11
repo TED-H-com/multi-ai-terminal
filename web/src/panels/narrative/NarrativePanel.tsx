@@ -1,6 +1,6 @@
 import type { AgentEvent } from '@mat/shared';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useMatStore } from '../../app/store.js';
 import { Collapsible } from '../../components/Collapsible.js';
 import { AiSisterAvatar } from '../../components/AiSisterTheme.js';
@@ -122,7 +122,7 @@ export function NarrativePanel({ loading = false, loadError, visible = true }: {
   </section>;
 }
 
-export function NarrativeRow({ item }: { item: NarrativeItem }) {
+export const NarrativeRow = memo(function NarrativeRow({ item }: { item: NarrativeItem }) {
   const { locale, t } = useUiPreferences();
   if (item.kind === 'gap') return <article role="alert" className="rounded border border-red-800/70 bg-red-950/25 px-3 py-2 text-xs text-red-200">{t('narrative.gap', { from: item.gap?.fromSeq ?? '?', to: item.gap?.toSeq ?? '?' })}</article>;
   const actor = item.actors[0];
@@ -139,4 +139,4 @@ export function NarrativeRow({ item }: { item: NarrativeItem }) {
     <header className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-border/60 pb-2 text-[10px] text-muted">{actor?.provider && <AiSisterAvatar provider={actor.provider} />}<span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: providerColor }} aria-hidden="true" /><strong className="text-sm text-ink">{actor?.label ?? t('narrative.run')}</strong>{actor?.provider && <span className="rounded-full border border-border bg-canvas/60 px-1.5 py-0.5 font-medium text-ink">{actor.provider}{actor.model ? ` · ${actor.model}` : ''}</span>}{actor?.stageName && <span className="rounded bg-raised px-1.5 py-0.5">{actor.stageName}</span>}<span>{t('narrative.attempt', { count: item.attempt })}</span><span>#{item.seqStart}{item.seqEnd !== item.seqStart ? `-${item.seqEnd}` : ''}</span><time className="ml-auto" dateTime={new Date(item.tsStart).toISOString()}>{new Date(item.tsStart).toLocaleTimeString(locale, { hour12: false })}</time></header>
     {content}
   </article>;
-}
+});
